@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+<h1>Blog Home!!</h1>
+
+<article class="media content-section">
+    <img src="{{ post.author.profile.image.url }}" alt="img" class="rounded-circle account-img">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a href="{% url 'user_posts' post.author.username %}" class="mr-2">{{ post.author }}</a>
+            <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+        </div>
+        {% if object.author == user %}
+        <!-- <a href="" class="btn btn-warning">Update</a>
+            <a href="" class="btn btn-danger">Delete</a> -->
+        {% endif %}
+        <h2 class="article-title" href="#">{{ post.title }}</h2>
+        <p class="article-content">{{ post.content|truncatewords:50 }}</p>
+    </div>
+</article>
+
+<div class="section">
+    <div class="container">
+        <p class="h1">Comments ({{ post_comments.count }})</p>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form action="" method="post">
+                    <div class="form-group">
+                        {% csrf_token %}
+                        {{ form }}
+                        <button class="btn btn-primary btn-sm mt-2">Comment</button>
+                    </div>
+                </form>
+
+                <div class="media-list">
+                    {% for post_comment in post_comments %}
+                    <div class="media-body d-flex justify-content-start">
+                        <img src="{{ post_comment.author.profile.image.url }}" alt="profile_pic" class="rounded-circle article-img">
+                        <p>{{ post_comment.content }}</p>
+                    </div>
+                    <small class="text-muted">{{ post_comment.author }}</small>
+                    <small class="text-muted">{{ post_comment.date }}</small>
+                    <br><br>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

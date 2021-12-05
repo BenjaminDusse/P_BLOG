@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+
+
+
+{% block content %}
+<h1>Blog Home!!!</h1>
+{% for post in posts %}
+<article class="media content-section">
+    <img src="{{ post.author.profile.image.url }}" alt="img" class="rounded-circle account-img">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a href="{% url 'user_posts' post.author.username %}" class="mr-2">{{ post.author }}</a>
+            <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+        </div>
+        <h2><a href="{% url 'post_detail' post.pk %}" class="article-title">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content|truncatewords:50 }}</p>
+    </div>
+</article>
+
+
+    {% if user.is_authenticated %}
+<form action="{% url 'like_post' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <button class="btn btn-primary btn-sm" type="submit" name="post_id" value="{{ post.id }}">
+        Like
+    </button>
+    {% endif %}
+    <span class="btn btn-outline-primary">Likes: {{ post.total_likes }}</span>
+</form>
+<br>
+<hr>
+
+
+{% endfor %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a href="?page={{ num }}" class="btn btn-info mb-4">{{ num }}</a>
+        {% elif num > page_obj.numuber|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}" class="btn btn-outline-info mb-4">{{ num }}</a>
+        {% endif %}
+        
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">Next</a>
+        {% if page_obj.next_page_number|add:'10' < page_obj.paginator.num_pages %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-info mb-4">...</a>    
+        {% else %}
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-info mb-4">Last</a>
+        {% endif %}        
+    {% endif %}
+
+
+    <form action="/gotopage/" method="post" class="form-group">
+        {% csrf_token %}
+        <input type="number" class="form-control" name="page">
+        <br>
+        <input type="submit" class="form-control" value="Go">
+    </form>
+
+
+{% endblock %}
+
+
